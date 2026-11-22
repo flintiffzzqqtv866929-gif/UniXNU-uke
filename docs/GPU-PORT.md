@@ -50,13 +50,19 @@ The GMU table gives 220 MHz / 550 MHz. `scripts/prepare-uke-gmu.py --derive`
 converts the `qcom,gpu-pwrlevels` entries and the DDR bus table into the OPP and
 bandwidth arrays the HFI vote builder consumes.
 
-Firmware pins (collected from the rooted device on 2026-10-21):
+Firmware pins:
 
-| File | Bytes | sha256 |
-| --- | --- | --- |
-| `gen71100_sqe.fw` | 66,036 | `b6df660d…` |
-| `gen71100_gmu.bin` | 80,680 | `435c7bac…` |
-| `gen71100_zap.mbn` | 12,088 | `12949928…` |
+| File | Bytes | sha256 | source |
+| --- | --- | --- | --- |
+| `gen71100_sqe.fw` | 67,348 | `eee95622…` | uke OS4.0.4.0 (2026-11-06) ROM `vendor_a.img`, A732 gen71100 |
+| `gen71100_gmu.bin` | 80,680 | `435c7bac…` | unchanged (matches the 2026-10-21 rooted-device capture) |
+| `gen71100_zap.mbn` | 12,088 | `f132c496…` | uke OS4.0.4.0 (2026-11-06) ROM `odm_a.img`, A732 gen71100 |
+
+The original 2026-10-21 rooted-device capture pinned sqe=`b6df660d…` (66,036 B) and
+zap=`12949928…` (12,088 B). The 2026-11-06 stock ROM carries newer sqe/zap (OTA
+version progression on the same A732); gmu is byte-identical. These pins were
+re-pinned to the device owner's own ROM so the firmware matches the hardware
+being brought up. On-device GPU qualification must be repeated with this set.
 
 ## Implemented without a device
 

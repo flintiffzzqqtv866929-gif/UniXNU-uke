@@ -430,12 +430,12 @@ def derive(args):
             ao_fatal_mask=fatal, cm3_fatal_mask=cm3,
         ),
         firmware=dict(
-            sqe=dict(name='gen71100_sqe.fw', bytes=66036,
-                     sha256='b6df660d109504dbea5a266910b037a33d893a11c6de52f524a5fd112008c401'),
+            sqe=dict(name='gen71100_sqe.fw', bytes=67348,
+                     sha256='eee95622aa1e487e96de55469a65c5642ce9b8c724f9da768c79fe54df760eff'),
             gmu=dict(name='gen71100_gmu.bin', bytes=80680,
                      sha256='435c7bac9a328b8a100df930b84b65b4d579e42be44785d0e60e3729291bb864'),
             zap=dict(name='gen71100_zap.mbn', bytes=12088,
-                     sha256='1294992888e8c7c7fcd8a6d0a672cc666eff3c95e666ce5840db7e03edcc500d'),
+                     sha256='f132c496f5415a944a47229518cd31a6ae323190bdc8a8296f027bbae4f62931'),
         ),
         provenance=dict(
             dt='live uke DT dump (private physical evidence, hashes only)',
