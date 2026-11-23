@@ -64,6 +64,7 @@ patch_series = ["arch:patches/xnu/series", "soc:patches/xnu-12377/series", "os:p
 archives = [
   "build-corecrypto-14.py",
   "build-corecrypto-14.py --namespace",
+  "build-mockfs-fixture.py",
   "component:ArmDTPlatform",
   "component:ArmCpu",
   "build-libpthread-kernel.py",
