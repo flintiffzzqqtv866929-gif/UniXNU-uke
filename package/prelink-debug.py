@@ -5,13 +5,17 @@ The prelink refuses with "Native code would collide with collection data" when t
 and __KLD, placed after the last retained kext, cross __DATA. The numbers that decide it are the
 segment tables of the native image and of the original collection, so a failed run records them here
 instead of leaving the next step to guess. The tool itself is unchanged and its output is untouched.
+
+This file is reached as <tree>/kits/uke/prelink-debug.py, a link to the board package: the tree is two
+directories above the link as spelled, never through resolve(), which would land in the board checkout.
 """
+import os
 import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-KITS = next(path for path in (ROOT / 'kits/XnuPrelink', ROOT / 'kits/NativePrelink') if path.is_dir())
+TREE = Path(os.path.abspath(__file__)).parents[2]
+KITS = TREE / 'kits' / ('XnuPrelink' if (TREE / 'kits/XnuPrelink').is_dir() else 'NativePrelink')
 arguments = sys.argv[1:]
 status = subprocess.run([sys.executable, str(KITS / 'emit_prelink.py'), *arguments]).returncode
 if status:
