@@ -183,13 +183,13 @@ sha256 = "f132c496f5415a944a47229518cd31a6ae323190bdc8a8296f027bbae4f62931"
 # code sits past that boundary; the two negations keep both out and land the tail at 0xfffffe000ac81ae0
 # (0x12520 of slack). Re-measure with package/prelink-debug.py if the native grows or a root changes.
 roots = ["com.apple.AppleFSCompression.AppleFSCompressionTypeZlib", "com.apple.driver.AppleARMPlatform", "com.apple.driver.AppleARMWatchdogTimer", "com.apple.driver.AppleAudioClockLibs", "com.apple.driver.AppleEffaceableStorage", "com.apple.driver.AppleIISController", "com.apple.driver.AppleM2ScalerCSCDriver", "com.apple.driver.AppleMobileFileIntegrity", "com.apple.driver.ApplePMGR", "com.apple.driver.IODARTFamily", "com.apple.filesystems.apfs", "com.apple.iokit.CoreAnalyticsFamily", "com.apple.iokit.IOAVFamily", "com.apple.iokit.IOAudio2Family", "com.apple.iokit.IOCECFamily", "com.apple.iokit.IOCryptoAcceleratorFamily", "com.apple.iokit.IOGPUFamily", "com.apple.iokit.IOHDCPFamily", "com.apple.iokit.IOMobileGraphicsFamily", "com.apple.iokit.IOReportFamily", "com.apple.iokit.IOSlowAdaptiveClockingFamily", "com.apple.iokit.IOStorageFamily", "com.apple.iokit.IOSurface", "com.apple.kec.Libm", "com.apple.kec.corecrypto", "com.apple.kext.AppleMatch", "com.apple.kext.CoreTrust", "com.apple.security.AppleImage4", "com.apple.security.sandbox", "com.apple.iokit.IOHIDFamily", "com.apple.iokit.IOHIDEventDriver", "com.apple.iokit.IOUSBDeviceFamily", "com.apple.driver.AppleUSBXDCI", "com.apple.driver.AppleUSBDeviceMux", "com.apple.iokit.IOUSBHostFamily", "com.apple.driver.usb.AppleUSBXHCI", "com.apple.driver.usb.AppleUSBHub", "com.apple.driver.usb.AppleUSBHostCompositeDevice", "com.apple.driver.usb.IOUSBHostHIDDevice", "com.apple.iokit.IOUSBMassStorageDriver", "com.apple.iokit.IOSCSIArchitectureModelFamily", "com.apple.iokit.IOSCSIBlockCommandsDevice", "!com.apple.filesystems.lifs", "!com.apple.driver.mDNSOffloadUserClient-Embedded", "!com.apple.driver.AppleOnboardSerial", "!com.apple.driver.AppleSMC"]
-# The profile names build/xnu/fileset-reference/mach.release... as the reference and expects it from
-# scripts/build-fileset-release-reference.py --lto; that build is not part of the kernel step, and the
-# earlier content-pinned copy in refer/ is gone. Without it --allow-missing sends every fileset call the
-# source cannot match to _unixnu_fileset_unmapped, and the layout only depends on roots. Restore the
-# --fileset-reference entry once the release reference is built in this tree.
-extra_args = ["--allow-missing"]
-# The pinned emitter, wrapped so a refused layout records the segment budget it refused.
+# extra_args comes from the profile: --fileset-reference build/xnu/fileset-reference/mach.release... with
+# --allow-missing. The workflow builds that reference with scripts/build-fileset-reference-27.py between
+# the kernel build and the prelink, because emit_prelink reads .cache/xnu-work and the source archives
+# that only a kernel build leaves behind; without it the regression policy reports unbound original
+# sites (AppleARMPlatform 0xfffffe0007ecff08 was the first).
+#
+# The emitter is wrapped so a refused layout records the segment budget it refused.
 tool = "kits/uke/prelink-debug.py"
 
 [firmware]
