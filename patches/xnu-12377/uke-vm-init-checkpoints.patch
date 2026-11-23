@@ -6,7 +6,7 @@ diff --git a/osfmk/arm/arm_init.c b/osfmk/arm/arm_init.c
  
  #include <pexpert/pexpert.h>
 +extern void uke_boot_stage(const char *) __attribute__((weak_import));
-+extern void uke_boot_stage_early_init(boot_args *);
++extern void uke_boot_stage_early_init(boot_args *) __attribute__((weak_import));
  
  #include <console/serial_protos.h>
  
@@ -154,10 +154,10 @@ diff --git a/osfmk/arm64/arm_vm_init.c b/osfmk/arm64/arm_vm_init.c
 +extern void uke_boot_stage(const char *) __attribute__((weak_import));
 +extern void uke_boot_stage_bind(uintptr_t, unsigned, unsigned, unsigned, unsigned) __attribute__((weak_import));
 +extern void uke_boot_stage_unbind(void) __attribute__((weak_import));
-+void uke_boot_stage_early_init(boot_args *);
-+void uke_boot_stage_prepare(uint64_t, boot_args *);
-+void uke_boot_stage_console_takeover(void);
-+void uke_boot_stage_console_ready(uintptr_t, unsigned, unsigned, unsigned, unsigned);
++void uke_boot_stage_early_init(boot_args *) __attribute__((weak_import));
++void uke_boot_stage_prepare(uint64_t, boot_args *) __attribute__((weak_import));
++void uke_boot_stage_console_takeover(void) __attribute__((weak_import));
++void uke_boot_stage_console_ready(uintptr_t, unsigned, unsigned, unsigned, unsigned) __attribute__((weak_import));
 +
 +/* UKE_STAGE_MAP_CORE_BEGIN: compiled unchanged by the host boundary tests. */
 +struct uke_stage_plan {
@@ -489,8 +489,8 @@ diff --git a/osfmk/console/video_console.c b/osfmk/console/video_console.c
  	}
  }
  
-+extern void uke_boot_stage_console_takeover(void);
-+extern void uke_boot_stage_console_ready(uintptr_t, unsigned, unsigned, unsigned, unsigned);
++extern void uke_boot_stage_console_takeover(void) __attribute__((weak_import));
++extern void uke_boot_stage_console_ready(uintptr_t, unsigned, unsigned, unsigned, unsigned) __attribute__((weak_import));
 +
  void
  initialize_screen(PE_Video * boot_vinfo, unsigned int op)
