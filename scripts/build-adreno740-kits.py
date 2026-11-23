@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Add the GMU kit and firmware planner objects to the NativeAdreno archive."""
-import hashlib, json, subprocess, sys
+import hashlib, json, os, subprocess, sys
 from pathlib import Path
 from kernel_target import TRIPLE
 ROOT = Path(__file__).resolve().parents[1]
+if os.environ.get('XNU_NATIVE_ADRENO', '0') != '1' and '--force' not in sys.argv[1:]:
+    print('SKIP: NATIVE_ADRENO is off for this configuration')
+    raise SystemExit(0)
 c_recipe = json.loads((ROOT / 'build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/bsd/DEVELOPMENT/bsd_init.o.json').read_text().strip().rstrip(','))
 cxx_recipe = json.loads((ROOT / 'build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/iokit/DEVELOPMENT/IOPlatformExpert.cpo.json').read_text().strip().rstrip(','))
 out = ROOT / 'build/adreno740'
