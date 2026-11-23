@@ -26,12 +26,6 @@ CONFIG_XNU_OWNER_ROOT_TRUST=y
 CONFIG_XNU_NATIVE_RAM_BLOCK=y
 CONFIG_XNU_EXTRA_LD_ARCHIVES="-Wl,-force_load,{tree}/build/sheng-source-storage/libShengSourceStorage.a -Wl,-force_load,{tree}/build/software-aes-27/libSoftwareAES27.a"
 
-# USB host: the QcomDwc3 adapters bind AppleUSBXDCI/AppleUSBXHCI original methods, which the prelink
-# only accepts while those kexts stay retained. Retaining them moves the native __TEXT_EXEC past the
-# room the 24A446 collection leaves before __DATA, so the first prelinked stage builds without USB.
-# Re-enable together with the USB roots in board.toml [kernel.prelink] once that room exists.
-# CONFIG_XNU_NATIVE_USB is not set
-
 # Existing owner chain: actual authenticated SystemOS mount before dyld selection.
 CONFIG_XNU_OWNER_CACHE_MOUNT=y
 CONFIG_XNU_OWNER_CACHE_STARTUP=y
