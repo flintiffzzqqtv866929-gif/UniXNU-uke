@@ -126,6 +126,12 @@ jobs:
         working-directory: UniXNU
         run: ./unixnu ipsw fetch -D ../UniXNU-uke
 
+      - name: Fetch the ath11k locked sources
+        working-directory: UniXNU/drivers/Ath12kWifi
+        # build-native-legacy-display-27.py needs the locked Linux/FreeBSD
+        # wireless sources under deps/; a cold checkout has no build-tree cache.
+        run: bash tools/fetch-sources.sh
+
       - name: Bootstrap kernel and prelinked candidate
         working-directory: UniXNU
         # bootstrap_defconfig disables every device archive. Its outputs are
@@ -279,6 +285,12 @@ jobs:
       - name: Fetch the target IPSW members
         working-directory: UniXNU
         run: ./unixnu ipsw fetch -D ../UniXNU-uke
+
+      - name: Fetch the ath11k locked sources
+        working-directory: UniXNU/drivers/Ath12kWifi
+        # build-native-legacy-display-27.py needs the locked Linux/FreeBSD
+        # wireless sources under deps/; a cold checkout has no build-tree cache.
+        run: bash tools/fetch-sources.sh
 
       - name: Bootstrap kernel and prelinked candidate
         working-directory: UniXNU
