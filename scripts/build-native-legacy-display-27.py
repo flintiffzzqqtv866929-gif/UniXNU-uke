@@ -765,7 +765,14 @@ for stem in ('usb-bindings', 'usb-addresses'):
 usb_late = USB_OUT / 'QcomDwc3.late.o'
 run([llvm / 'llvm-objcopy', '--remove-section=__DATA,__mod_init_func', '--globalize-symbol=__GLOBAL__sub_I_QcomDwc3.cpp',
      USB_OUT / 'QcomDwc3.o', usb_late])
-input_objects += [usb_late, USB_OUT / 'usb-bindings.o', USB_OUT / 'usb-addresses.o', USB_OUT / 'UsbProbe.o', USB_OUT / 'UkeUsbBoard.o']
+# The adapters bind AppleUSBXDCI/AppleUSBXHCI originals, so the prelink only accepts them while those
+# kexts are retained, and every retained kext pushes native __TEXT_EXEC further towards __DATA. Keep the
+# USB stage switchable: XNU_NATIVE_USB=0 archives the display and storage backends alone.
+if os.environ.get('XNU_NATIVE_USB', '1') == '1':
+    input_objects += [usb_late, USB_OUT / 'usb-bindings.o', USB_OUT / 'usb-addresses.o',
+                      USB_OUT / 'UsbProbe.o', USB_OUT / 'UkeUsbBoard.o']
+else:
+    print('USB adapters: XNU_NATIVE_USB=0, not archived')
 
 print(f'Board drivers: {len(board_objects)} objects')
 stage_source = KITS / 'UkeBootStages.cpp'
