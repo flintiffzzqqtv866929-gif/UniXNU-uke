@@ -120,7 +120,7 @@ jobs:
         working-directory: UniXNU
         run: |
           ./unixnu fetch xnu libplatform libdispatch AvailabilityVersions libpthread \
-                          corecrypto-2023 IOStorageFamily -D ../UniXNU-uke
+                          corecrypto-2023 IOStorageFamily IOHIDFamily -D ../UniXNU-uke
 
       - name: Fetch the target IPSW members
         working-directory: UniXNU
@@ -274,7 +274,7 @@ jobs:
         # other references feed the kernel scripts and the archive builders.
         run: |
           ./unixnu fetch xnu libplatform libdispatch AvailabilityVersions libpthread \
-                          corecrypto-2023 IOStorageFamily -D ../UniXNU-uke
+                          corecrypto-2023 IOStorageFamily IOHIDFamily -D ../UniXNU-uke
 
       - name: Fetch the target IPSW members
         working-directory: UniXNU
