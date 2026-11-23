@@ -772,7 +772,7 @@ print(f'Board drivers: {len(board_objects)} objects')
 # and ShengUfs's last-log writer both read them, so the forced archive carries the inert ones.
 addon_state = OUT / 'GpuAddonState.o'
 run(['xcrun', 'clang', '-target', TRIPLE, '-isysroot', sdk, '-mkernel', f'-miphoneos-version-min={IOS_VERSION}',
-     '-Os', '-c', ROOT / 'package/GpuAddonState.c', '-o', addon_state])
+     '-Os', '-c', KITS / 'GpuAddonState.c', '-o', addon_state])
 input_objects.append(addon_state)
 stage_source = KITS / 'UkeBootStages.cpp'
 stage_object = OUT / 'UkeBootStages.o'
@@ -827,7 +827,7 @@ sources += [KITS / name for name in (
 sources += [ROOT / 'scripts' / f'usb-{kind}-24A446.json' for kind in ('xdci', 'xhci')]
 sources += list(remoteproc.glob('*.c')) + list(remoteproc.glob('*.h')) + list(remoteproc.glob('*.cpp'))
 (OUT / 'build-report.json').write_text(json.dumps(dict(
-    source_sha256={str(p.relative_to(ROOT)): sha(p) for p in sources + [ROOT / 'package/GpuAddonState.c']}, generated_abi_sha256=sha(OUT / 'OriginalLegacyFramebufferABI.h'),
+    source_sha256={str(p.relative_to(ROOT)): sha(p) for p in sources + [KITS / 'GpuAddonState.c']}, generated_abi_sha256=sha(OUT / 'OriginalLegacyFramebufferABI.h'),
     kernelcache_sha256=abi['kernelcache_sha256'], compiled_object_sha256=sha(obj), archive_sha256=sha(archive),
     qmi_codec_report_sha256=sha(qmi_output / 'build-report.json'),
     bindings={n: hex(v) for n, v in bindings.items()}, virtual_entries=len(slots), owned_entries=owned,
