@@ -130,7 +130,15 @@ jobs:
         working-directory: UniXNU/drivers/Ath12kWifi
         # build-native-legacy-display-27.py needs the locked Linux/FreeBSD
         # wireless sources under deps/; a cold checkout has no build-tree cache.
-        run: bash tools/fetch-sources.sh
+        # fetch-sources.py shallow-clones the branch tip, but FreeBSD releng/15.1
+        # has moved past the pinned commit, so pin it before the tool verifies.
+        run: |
+          if [ ! -d deps/freebsd/.git ]; then
+            git clone --depth 1 --filter=blob:none --sparse https://github.com/freebsd/freebsd-src.git deps/freebsd
+          fi
+          git -C deps/freebsd fetch --depth 1 origin 95719d8a895bf8170851e9844d9b4092b1d2b6fe
+          git -C deps/freebsd checkout 95719d8a895bf8170851e9844d9b4092b1d2b6fe
+          bash tools/fetch-sources.sh
 
       - name: Bootstrap kernel and prelinked candidate
         working-directory: UniXNU
@@ -290,7 +298,15 @@ jobs:
         working-directory: UniXNU/drivers/Ath12kWifi
         # build-native-legacy-display-27.py needs the locked Linux/FreeBSD
         # wireless sources under deps/; a cold checkout has no build-tree cache.
-        run: bash tools/fetch-sources.sh
+        # fetch-sources.py shallow-clones the branch tip, but FreeBSD releng/15.1
+        # has moved past the pinned commit, so pin it before the tool verifies.
+        run: |
+          if [ ! -d deps/freebsd/.git ]; then
+            git clone --depth 1 --filter=blob:none --sparse https://github.com/freebsd/freebsd-src.git deps/freebsd
+          fi
+          git -C deps/freebsd fetch --depth 1 origin 95719d8a895bf8170851e9844d9b4092b1d2b6fe
+          git -C deps/freebsd checkout 95719d8a895bf8170851e9844d9b4092b1d2b6fe
+          bash tools/fetch-sources.sh
 
       - name: Bootstrap kernel and prelinked candidate
         working-directory: UniXNU
