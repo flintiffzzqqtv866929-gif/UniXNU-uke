@@ -84,6 +84,10 @@ archives = [
   "build-adreno740-kits.py",
   "build-adreno740-accelerator.py",
   "build-native-legacy-display-27.py",
+  # CONFIG_XNU_SHENG_PMGR=y makes the final link force-load libShengPlatformPower.a for the
+  # sheng_pmgr_run hook the SoC patch calls from bsd_init. On a cold tree the builder archives a
+  # no-op sheng_pmgr_run (UKE_PMGR_BRIDGE=1 with a reference kernel links the real bridge).
+  "build-platform-power.py",
   # Match the stripped Apple kernel against the real upstream RELEASE/LTO reference.
 ]
 

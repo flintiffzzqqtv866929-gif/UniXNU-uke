@@ -3,12 +3,13 @@
 
 It is build-sheng-platform-power.py of UniXNU-sheng with these changes. The source is the board kit's copy of
 ShengPlatformPower.cpp. The reference candidate is this board's previous prelinked kernel (out/<board>/kernel), built
-from the same original kernelcache. Without one, as on a new tree, it archives a no-op sheng_pmgr_run so the kernel
-links; the next kernel build then has the reference and links the bridge. The original kernelcache the contract audit
+from the same original kernelcache. Unless UKE_PMGR_BRIDGE=1 and that reference kernel and the XnuPrelink kit reader
+all exist, it archives a no-op sheng_pmgr_run so the kernel always links on a cold tree. The original kernelcache the contract audit
 reads is linked from the IPSW cache of the unixnu driver.
 """
 import hashlib
 import json
+import os
 from pathlib import Path
 import struct
 import subprocess
@@ -17,8 +18,12 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'build/sheng-platform-power'
 OUT.mkdir(parents=True, exist_ok=True)
-sys.path.insert(0, str(ROOT / 'kits/NativePrelink'))
-from native_prelink import macho, backed_offset, exports
+# The Mach-O reader lives in the XnuPrelink kit (feeds.toml), not in a tree-local NativePrelink
+# directory; it is imported lazily because the first pass links a stub and never reads a Mach-O.
+from kernel_target import IOS_VERSION, TRIPLE
+
+PRELINK_KIT = next((path for path in (ROOT / 'kits/XnuPrelink', ROOT / 'kits/NativePrelink')
+                    if (path / 'native_prelink.py').is_file()), None)
 
 ORIGINAL_KERNELCACHE_SHA256 = 'f18b4df865405f2a287b84977d7aca745e056d656d9fc9df1662970ce2969de7'
 
@@ -32,17 +37,22 @@ def require(value, message):
         raise SystemExit(message)
 
 
+# The bridge binds the original ApplePMGR at fileset addresses of one recorded kernel; it is opt-in so a
+# first bring-up kernel always links. UKE_PMGR_BRIDGE=1 with a reference kernel and the kit reader enables it.
 reference = ROOT.parent / 'kernel/kernel.macho'
-if not reference.is_file():
+if os.environ.get('UKE_PMGR_BRIDGE', '0') != '1' or not reference.is_file() or PRELINK_KIT is None:
     stub = OUT / 'FirstPassStub.c'
     stub.write_text('// No reference kernel yet: the bridge needs one, so the first kernel links without it.\n'
                     'void sheng_pmgr_run(void);\nvoid sheng_pmgr_run(void)\n{\n}\n')
-    run(['xcrun', '--sdk', 'iphoneos', 'clang', '-arch', 'arm64', '-mkernel', '-miphoneos-version-min=17.0', '-Os',
-         '-c', stub, '-o', OUT / 'FirstPassStub.o'])
+    run(['xcrun', '--sdk', 'iphoneos', 'clang', '-target', TRIPLE, '-mkernel',
+         f'-miphoneos-version-min={IOS_VERSION}', '-Os', '-c', stub, '-o', OUT / 'FirstPassStub.o'])
     (OUT / 'libShengPlatformPower.a').unlink(missing_ok=True)
     run(['xcrun', 'ar', 'rcs', OUT / 'libShengPlatformPower.a', OUT / 'FirstPassStub.o'])
-    print('PMGR bridge: no reference kernel yet; linked a no-op sheng_pmgr_run. Build the kernel again to link the bridge.')
+    print('PMGR bridge: stub sheng_pmgr_run archived (no UKE_PMGR_BRIDGE=1 reference kernel); the kernel links.')
     raise SystemExit(0)
+
+sys.path.insert(0, str(PRELINK_KIT))
+from native_prelink import macho, backed_offset, exports  # noqa: E402
 
 # The contract audit reads the original kernelcache from .cache/firmware; take it from the IPSW cache of the driver.
 original = ROOT / '.cache/firmware/kernelcache.macho/kernelcache.release.ipad7.decompressed'
@@ -74,7 +84,12 @@ header += '};\nstatic_assert(sizeof(ApplePMGR)==0x4b8a8,"Original provider stora
 (OUT / 'OriginalPMGRABI.h').write_text(header)
 (OUT / 'GuardedPMGRSlots.inc').write_text(guards)
 sources = sorted(ROOT.glob('kits/*/ShengPlatformPower.cpp'))
-require(len(sources) == 1, 'Expected one board kit with ShengPlatformPower.cpp')
+if not sources:
+    # board.toml maps this repository's package/ to kits/uke; a tree assembled without that link
+    # still carries the same file under package/.
+    sources = [ROOT / 'package/ShengPlatformPower.cpp']
+require(len(sources) == 1 and all(path.is_file() for path in sources),
+        'Expected one board kit with ShengPlatformPower.cpp')
 source = sources[0]
 obj = OUT / 'ShengPlatformPower.o'
 record = json.loads((ROOT / 'build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/iokit/DEVELOPMENT/IOPlatformExpert.cpo.json').read_text().strip().rstrip(','))
