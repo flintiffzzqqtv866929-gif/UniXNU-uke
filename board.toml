@@ -178,7 +178,12 @@ sha256 = "f132c496f5415a944a47229518cd31a6ae323190bdc8a8296f027bbae4f62931"
 # Retain Image4 code as a dependency; do not start its hardware-key service.
 # Follow sheng for USB hub, HID and mass-storage matching. AppleOnboardSerial and AppleSMC are optional host metaclass casts.
 roots = ["com.apple.AppleFSCompression.AppleFSCompressionTypeZlib", "com.apple.driver.AppleARMPlatform", "com.apple.driver.AppleARMWatchdogTimer", "com.apple.driver.AppleAudioClockLibs", "com.apple.driver.AppleEffaceableStorage", "com.apple.driver.AppleIISController", "com.apple.driver.AppleM2ScalerCSCDriver", "com.apple.driver.AppleMobileFileIntegrity", "com.apple.driver.ApplePMGR", "com.apple.driver.IODARTFamily", "com.apple.filesystems.apfs", "com.apple.filesystems.lifs", "com.apple.iokit.CoreAnalyticsFamily", "com.apple.iokit.IOAVFamily", "com.apple.iokit.IOAudio2Family", "com.apple.iokit.IOCECFamily", "com.apple.iokit.IOCryptoAcceleratorFamily", "com.apple.iokit.IOGPUFamily", "com.apple.iokit.IOHDCPFamily", "com.apple.iokit.IOMobileGraphicsFamily", "com.apple.iokit.IOReportFamily", "com.apple.iokit.IOSlowAdaptiveClockingFamily", "com.apple.iokit.IOStorageFamily", "com.apple.iokit.IOSurface", "com.apple.kec.Libm", "com.apple.kec.corecrypto", "com.apple.kext.AppleMatch", "com.apple.kext.CoreTrust", "com.apple.security.AppleImage4", "com.apple.security.sandbox", "com.apple.iokit.IOHIDFamily", "com.apple.iokit.IOHIDEventDriver", "com.apple.iokit.IOUSBDeviceFamily", "com.apple.driver.AppleUSBXDCI", "com.apple.driver.AppleUSBDeviceMux", "com.apple.iokit.IOUSBHostFamily", "com.apple.driver.usb.AppleUSBXHCI", "com.apple.driver.usb.AppleUSBHub", "com.apple.driver.usb.AppleUSBHostCompositeDevice", "com.apple.driver.usb.IOUSBHostHIDDevice", "com.apple.iokit.IOUSBMassStorageDriver", "com.apple.iokit.IOSCSIArchitectureModelFamily", "com.apple.iokit.IOSCSIBlockCommandsDevice", "!com.apple.driver.AppleOnboardSerial", "!com.apple.driver.AppleSMC"]
-extra_args = ["--fileset-reference", "refer/apple-fileset-reference/2f9eabe43241bb9b64d367151d79d660e81e3ec7fee8399c3f37a0f5ba3b5aa8.macho", "--allow-missing"]
+# The content-pinned reference of upstream run 41449626495 is not part of this tree: refer/ is a build
+# output and the artifact is no longer downloadable. Without it --allow-missing sends every fileset call
+# the source cannot match to _unixnu_fileset_unmapped instead of binding an original site. Regenerate the
+# reference with scripts/build-fileset-reference-27.py and add "--fileset-reference <path>" back once its
+# content hash is recorded; the pin belongs to that exact build, not to an arbitrary one.
+extra_args = ["--allow-missing"]
 
 [firmware]
 config = "uke"                   # Resources/Configs/uke.toml in the Mu-Silicium checkout (--uefi)
