@@ -797,8 +797,12 @@ sources += [KITS / name for name in ('ButtonProbe.cpp', 'BacklightProbe.cpp', 'A
                                     'TouchProbe.cpp')]
 sources += [Path(__file__).resolve(), KITS / 'CpuFreqProbe.cpp', KITS / 'GpuPowerProbe.cpp',
             KITS / 'GpuMemoryPool.cpp', KITS / 'GpuDcvsOpps.h', KITS / 'ShengGmuVotes.c',
-            ROOT / 'build/sheng-gmu/ShengGmuVotesSource.h', ROOT / 'scripts/prepare-uke-gmu.py',
-            ROOT / 'scripts/data/uke-gpu-inputs.json']
+            ROOT / 'scripts/prepare-uke-gmu.py', ROOT / 'scripts/data/uke-gpu-inputs.json']
+# In the bootstrap pass prepare-uke-gmu.py is skipped (NATIVE_ADRENO off), so the
+# generated vote header is absent. Record it in the source hash only when present.
+_gmu_votes = ROOT / 'build/sheng-gmu/ShengGmuVotesSource.h'
+if _gmu_votes.is_file():
+    sources.append(_gmu_votes)
 sources += [KITS / (stem + suffix) for stem, suffix in [('WifiProbe', '.cpp'), ('WifiAth11k', '.cpp'), ('WifiNet', '.cpp'), ('WifiQrtr', '.c'), ('WifiQmiSupport', '.c'), ('AdspFirmware', '.c'), ('UkeWpss', '.h'), ('UkeWpssMemory', '.h'), ('UkeClassRegistration', '.h')]]
 sources += [qmi_module / 'include/nw_wcn6750_qmi.h', ROOT / 'scripts/build-wcn6750-qmi.py']
 sources += [KITS / 'BootResetCore.h', ROOT / 'scripts/build-ath11k-wifi.py',
