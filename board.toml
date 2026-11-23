@@ -191,6 +191,8 @@ roots = ["com.apple.AppleFSCompression.AppleFSCompressionTypeZlib", "com.apple.d
 #
 # The emitter is wrapped so a refused layout records the segment budget it refused.
 tool = "kits/uke/prelink-debug.py"
+# The board copy of the regression policy carries one extra allowed-missing site; see its description.
+regression_policy = "kits/uke/prelink-regression-uke.json"
 
 [firmware]
 config = "uke"                   # Resources/Configs/uke.toml in the Mu-Silicium checkout (--uefi)
