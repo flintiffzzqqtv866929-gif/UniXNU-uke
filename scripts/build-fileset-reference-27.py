@@ -108,7 +108,11 @@ if result.returncode:
         stubs = output / 'native-stubs.c'
         stubs.write_text(''.join(f'long {name[1:]};\n' for name in missing))
         obj = output / 'native-stubs.o'
-        cc = os.environ.get('CROSS_CLANG') or f'{clt}/bin/clang'
+        # clt is only assigned in the Linux branch above; on macOS the driver is xcrun.
+        cc = os.environ.get('CROSS_CLANG')
+        if not cc:
+            clt = os.environ.get('CLT_PREFIX', '/opt/unixnu-linux/CommandLineTools/usr')
+            cc = f'{clt}/bin/clang' if Path(f'{clt}/bin/clang').is_file() else 'xcrun'
         subprocess.run([cc, '--target=arm64e-apple-ios27.0', '-mkernel', '-c',
                         '-o', str(obj), str(stubs)], check=True)
         for i, a in enumerate(args):
